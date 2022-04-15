@@ -2,6 +2,7 @@ using System.Reflection;
 using ComputerGraphics.Common.Meshes;
 using ComputerGraphics.Common.Scenes;
 using ComputerGraphics.Common.Shaders;
+using ComputerGraphics.Common.Transforms;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -10,6 +11,7 @@ namespace ComputerGraphics.ClothSimulation.Scenes;
 public class SimpleTriangleScene : IScene
 {
     private readonly IMesh _triangleMesh;
+    private readonly ITransform _triangleTransform;
     private readonly IShader _shader;
 
     private bool _disposed;
@@ -30,6 +32,8 @@ public class SimpleTriangleScene : IScene
             new Vector3(0.0f, 0.0f, 1.0f),
         });
 
+        _triangleTransform = new Transform();
+
         string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         _shader = new Shader($"{assemblyPath}/Shaders/Default.vert", $"{assemblyPath}/Shaders/Default.frag");
     }
@@ -48,10 +52,18 @@ public class SimpleTriangleScene : IScene
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     }
 
+    public void Update()
+    {
+        _triangleTransform.Rotate(0.0f, 90.0f * 0.01f, 0.0f, false);
+    }
+
     public void Draw()
     {
         _shader.Activate();
+        _shader.SetUniformMatrix4("mvpMatrix", _triangleTransform.ModelMatrix);
+
         _triangleMesh.Draw();
+
         _shader.Deactivate();
     }
 

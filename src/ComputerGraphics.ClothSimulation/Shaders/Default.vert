@@ -8,11 +8,14 @@ in vec4 vColor;
 // Data sent to the fragment shader
 out vec4 color;
 
+// Uniform matrix, ModelViewProjection matrix
+uniform mat4 mvpMatrix;
+
 void main(void)
 {
 	// Set the color of this vertex so it can be interpolated by the fragment shader
 	color = vColor;
 
 	// Compute the position of the current vertex
-	gl_Position = vVertex;
+	gl_Position = mvpMatrix * vVertex;
 }

@@ -103,7 +103,7 @@ public class Transform : ITransform
 
     public void Translate(float x, float y, float z, bool world)
     {
-        Translate(-new Vector3(x, y, z), world);
+        Translate(new Vector3(x, y, z), world);
     }
 
     public void Translate(Vector3 translation, bool world)
