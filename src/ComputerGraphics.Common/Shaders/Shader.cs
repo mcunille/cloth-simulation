@@ -49,28 +49,28 @@ public class Shader : IShader
     /// <inheritdoc/>
     public void SetUniformInt(string name, int data)
     {
-        GL.UseProgram(_shaderID);
+        if (!_uniformLocations.ContainsKey(name)) { return; }
         GL.Uniform1(_uniformLocations[name], data);
     }
 
     /// <inheritdoc/>
     public void SetUniformFloat(string name, float data)
     {
-        GL.UseProgram(_shaderID);
+        if (!_uniformLocations.ContainsKey(name)) { return; }
         GL.Uniform1(_uniformLocations[name], data);
     }
 
     /// <inheritdoc/>
     public void SetUniformMatrix4(string name, Matrix4 data)
     {
-        GL.UseProgram(_shaderID);
-        GL.UniformMatrix4(_uniformLocations[name], transpose: true, matrix: ref data);
+        if (!_uniformLocations.ContainsKey(name)) { return; }
+        GL.UniformMatrix4(_uniformLocations[name], transpose: false, matrix: ref data);
     }
 
     /// <inheritdoc/>
     public void SetUniformVector3(string name, Vector3 data)
     {
-        GL.UseProgram(_shaderID);
+        if (!_uniformLocations.ContainsKey(name)) { return; }
         GL.Uniform3(_uniformLocations[name], data);
     }
 
@@ -98,17 +98,17 @@ public class Shader : IShader
 
     private void LoadShader(string path, ShaderType type)
     {
-        var source = File.ReadAllText(path);
-        var shader = GL.CreateShader(type);
+        string source = File.ReadAllText(path);
+        int shader = GL.CreateShader(type);
 
         GL.ShaderSource(shader, source);
         GL.CompileShader(shader);
 
         // Check for compilation errors.
-        GL.GetShader(shader, ShaderParameter.CompileStatus, out var code);
+        GL.GetShader(shader, ShaderParameter.CompileStatus, out int code);
         if (code != (int)All.True)
         {
-            var infoLog = GL.GetShaderInfoLog(shader);
+            string infoLog = GL.GetShaderInfoLog(shader);
             throw new Exception($"Error occurred whilst compiling Shader({shader}).\n\n{infoLog}");
         }
 
@@ -129,7 +129,7 @@ public class Shader : IShader
         GL.LinkProgram(_shaderID);
 
         // Check for linking errors
-        GL.GetProgram(_shaderID, GetProgramParameterName.LinkStatus, out var code);
+        GL.GetProgram(_shaderID, GetProgramParameterName.LinkStatus, out int code);
         if (code != (int)All.True)
         {
             // We can use `GL.GetProgramInfoLog(program)` to get information about the error.
@@ -144,19 +144,11 @@ public class Shader : IShader
 
     private void GetUniformLocations()
     {
-        // First, we have to get the number of active uniforms in the shader.
-        GL.GetProgram(_shaderID, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
-
-        // Loop over all the uniforms,
-        for (var i = 0; i < numberOfUniforms; i++)
+        GL.GetProgram(_shaderID, GetProgramParameterName.ActiveUniforms, out int numberOfUniforms);
+        for (int i = 0; i < numberOfUniforms; i++)
         {
-            // get the name of this uniform,
-            var key = GL.GetActiveUniform(_shaderID, i, out _, out _);
-
-            // get the location,
-            var location = GL.GetUniformLocation(_shaderID, key);
-
-            // and then add it to the dictionary.
+            string key = GL.GetActiveUniform(_shaderID, i, out _, out _);
+            int location = GL.GetUniformLocation(_shaderID, key);
             _uniformLocations.Add(key, location);
         }
     }

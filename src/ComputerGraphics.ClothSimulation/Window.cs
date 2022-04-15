@@ -25,6 +25,9 @@ public class Window : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
+
+        GL.Enable(EnableCap.DepthTest);
+
         _scene.Awake();
     }
 
@@ -33,8 +36,10 @@ public class Window : GameWindow
     {
         base.OnRenderFrame(args);
 
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
         _scene.Draw();
+
         SwapBuffers();
     }
 

@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace ComputerGraphics.Common.Meshes;
+namespace ComputerGraphics.Common.Modeling;
 
 public interface IMesh : IDisposable
 {
