@@ -190,10 +190,10 @@ csharp_style_allow_embedded_statements_on_same_line_experimental = false
 csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = false
 
-# Prefer "var" everywhere
-csharp_style_var_for_built_in_types = true:suggestion
+# Do NOT prefer "var" everywhere
+csharp_style_var_for_built_in_types = false:warning
 csharp_style_var_when_type_is_apparent = true:suggestion
-csharp_style_var_elsewhere = true:suggestion
+csharp_style_var_elsewhere = false:warning
 
 # Prefer method-like constructs to have a block body
 csharp_style_expression_bodied_methods = false:none

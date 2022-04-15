@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="Shaders/*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ComputerGraphics.Common\ComputerGraphics.Common.csproj" />
   </ItemGroup>
 
