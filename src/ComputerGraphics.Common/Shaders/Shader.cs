@@ -41,6 +41,12 @@ public class Shader : IShader
     }
 
     /// <inheritdoc/>
+    public void Deactivate()
+    {
+        GL.UseProgram(0);
+    }
+
+    /// <inheritdoc/>
     public void SetUniformInt(string name, int data)
     {
         GL.UseProgram(_shaderID);

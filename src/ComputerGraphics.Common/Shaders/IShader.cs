@@ -5,6 +5,7 @@ namespace ComputerGraphics.Common.Shaders;
 public interface IShader : IDisposable
 {
     void Activate();
+    void Deactivate();
 
     void SetUniformInt(string name, int data);
     void SetUniformFloat(string name, float data);
