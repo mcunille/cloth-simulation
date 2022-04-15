@@ -11,6 +11,7 @@ public class Mesh : IMesh, IDisposable
 
     private readonly int _vertexArrayObject;
     private int _vertexBufferObject = 0;
+    private int _colorBufferObject = 0;
     private int _numberOfVertices = 0;
     private bool _disposed;
 
@@ -27,6 +28,7 @@ public class Mesh : IMesh, IDisposable
         Dispose(disposing: false);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -34,6 +36,7 @@ public class Mesh : IMesh, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc/>
     public void Draw()
     {
         GL.BindVertexArray(_vertexArrayObject);
@@ -41,54 +44,50 @@ public class Mesh : IMesh, IDisposable
         GL.BindVertexArray(0);
     }
 
+    /// <inheritdoc/>
     public void SetVertexData(Vector2[] vertices)
     {
-        if (_vertexBufferObject != 0)
+        _vertexBufferObject = ResetBuffer(_vertexBufferObject);
+
+        ApplyArrayBufferConfiguration(_vertexArrayObject, () =>
         {
-            // Delete existing buffer
-            GL.DeleteBuffer(_vertexBufferObject);
-        }
+            GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, vertices.Length * Vector2.SizeInBytes, vertices, _usage);
 
-        _vertexBufferObject = GL.GenBuffer();
-
-        GL.BindVertexArray(_vertexArrayObject);
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-        GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, vertices.Length * Vector2.SizeInBytes, vertices, _usage);
-
-        GL.EnableVertexAttribArray((int)ShaderAttribute.Vertex);
-        GL.VertexAttribPointer((int)ShaderAttribute.Vertex, 2, VertexAttribPointerType.Float, false, 0, 0);
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.EnableVertexAttribArray((int)ShaderAttribute.Vertex);
+            GL.VertexAttribPointer((int)ShaderAttribute.Vertex, 2, VertexAttribPointerType.Float, false, 0, 0);
+        });
 
         _numberOfVertices = vertices.Length;
-
-        GL.BindVertexArray(0);
     }
 
+    /// <inheritdoc/>
     public void SetVertexData(Vector3[] vertices)
     {
-        if (_vertexBufferObject != 0)
+        _vertexBufferObject = ResetBuffer(_vertexBufferObject);
+
+        ApplyArrayBufferConfiguration(_vertexBufferObject, () =>
         {
-            // Delete existing buffer
-            GL.DeleteBuffer(_vertexBufferObject);
-        }
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * Vector3.SizeInBytes, vertices, _usage);
 
-        _vertexBufferObject = GL.GenBuffer();
-
-        GL.BindVertexArray(_vertexArrayObject);
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-        GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, vertices.Length * Vector3.SizeInBytes, vertices, _usage);
-
-        GL.EnableVertexAttribArray((int)ShaderAttribute.Vertex);
-        GL.VertexAttribPointer((int)ShaderAttribute.Vertex, 3, VertexAttribPointerType.Float, false, 0, 0);
-
-        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.EnableVertexAttribArray((int)ShaderAttribute.Vertex);
+            GL.VertexAttribPointer((int)ShaderAttribute.Vertex, 3, VertexAttribPointerType.Float, false, 0, 0);
+        });
 
         _numberOfVertices = vertices.Length;
+    }
 
-        GL.BindVertexArray(0);
+    /// <inheritdoc/>
+    public void SetColorData(Vector3[] colors)
+    {
+        _colorBufferObject = ResetBuffer(_colorBufferObject);
+
+        ApplyArrayBufferConfiguration(_colorBufferObject, () =>
+        {
+            GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, colors.Length * Vector3.SizeInBytes, colors, _usage);
+
+            GL.EnableVertexAttribArray((int)ShaderAttribute.Color);
+            GL.VertexAttribPointer((int)ShaderAttribute.Color, 3, VertexAttribPointerType.Float, false, 0, 0);
+        });
     }
 
     protected virtual void Dispose(bool disposing)
@@ -109,7 +108,32 @@ public class Mesh : IMesh, IDisposable
                 GL.DeleteBuffer(_vertexBufferObject);
             }
 
+            // Delete the color buffer if it was set.
+            if (_colorBufferObject != 0)
+            {
+                GL.DeleteBuffer(_colorBufferObject);
+            }
+
             _disposed = true;
         }
+    }
+
+    private void ApplyArrayBufferConfiguration(int buffer, Action configure)
+    {
+        GL.BindVertexArray(_vertexArrayObject);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, buffer);
+        configure.Invoke();
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        GL.BindVertexArray(0);
+    }
+
+    private static int ResetBuffer(int bufferObject)
+    {
+        if (bufferObject != 0)
+        {
+            GL.DeleteBuffer(bufferObject);
+        }
+
+        return GL.GenBuffer();
     }
 }

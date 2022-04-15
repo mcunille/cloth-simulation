@@ -23,6 +23,12 @@ public class SimpleTriangleScene : IScene
             new Vector2(0.5f, -0.5f),
             new Vector2(0.0f, 0.5f),
         });
+        _triangleMesh.SetColorData(new Vector3[]
+        {
+            new Vector3(1.0f, 0.0f, 0.0f),
+            new Vector3(0.0f, 1.0f, 0.0f),
+            new Vector3(0.0f, 0.0f, 1.0f),
+        });
 
         string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         _shader = new Shader($"{assemblyPath}/Shaders/Default.vert", $"{assemblyPath}/Shaders/Default.frag");
