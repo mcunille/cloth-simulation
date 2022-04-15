@@ -1,6 +1,8 @@
 using System.Reflection;
+using ComputerGraphics.Common.Meshes;
 using ComputerGraphics.Common.Shaders;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -13,17 +15,7 @@ namespace ComputerGraphics.ClothSimulation;
 /// </summary>
 public class Window : GameWindow
 {
-    private readonly float[] _vertices =
-    {
-        -0.5f, -0.5f, 0.0f, // Bottom-left vertex
-         0.5f, -0.5f, 0.0f, // Bottom-right vertex
-         0.0f,  0.5f, 0.0f  // Top vertex
-    };
-
-    private int _vertexBufferObject;
-    private int _vertexArrayObject;
-
-    // Shader will be ininitialied on load and won't be null thereafter.
+    private IMesh _triangleMesh = null!;
     private IShader _shader = null!;
 
     /// <inheritdoc/>
@@ -40,19 +32,16 @@ public class Window : GameWindow
         // Set background color.
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        _vertexBufferObject = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-        GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
-        _vertexArrayObject = GL.GenVertexArray();
-        GL.BindVertexArray(_vertexArrayObject);
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-
-        GL.EnableVertexAttribArray(0);
+        _triangleMesh = new Mesh(primitive: PrimitiveType.Triangles);
+        _triangleMesh.SetVertexData(new Vector2[]
+        {
+            new Vector2(-0.5f, -0.5f),
+            new Vector2(0.5f, -0.5f),
+            new Vector2(0.0f, 0.5f),
+        });
 
         string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         _shader = new Shader($"{assemblyPath}/Shaders/Default.vert", $"{assemblyPath}/Shaders/Default.frag");
-        _shader.Activate();
     }
 
     /// <inheritdoc/>
@@ -63,9 +52,7 @@ public class Window : GameWindow
         GL.Clear(ClearBufferMask.ColorBufferBit);
 
         _shader.Activate();
-
-        GL.BindVertexArray(_vertexArrayObject);
-        GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+        _triangleMesh.Draw();
 
         SwapBuffers();
     }
@@ -96,11 +83,8 @@ public class Window : GameWindow
         GL.BindVertexArray(0);
         GL.UseProgram(0);
 
-        // Delete all the resources.
-        GL.DeleteBuffer(_vertexBufferObject);
-        GL.DeleteVertexArray(_vertexArrayObject);
-
-        // Dispose of shader resources.
+        // Dispose of resources.
+        _triangleMesh.Dispose();
         _shader.Dispose();
 
         base.OnUnload();

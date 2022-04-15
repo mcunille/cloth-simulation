@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace ComputerGraphics.Common.Transform;
+namespace ComputerGraphics.Common.Transforms;
 
 public class Transform : ITransform
 {
@@ -160,12 +160,21 @@ public class Transform : ITransform
         UpdateModelMatrixRotation();
     }
 
+    public Vector3 GetEulerAnglesInDegrees()
+    {
+        Vector3 radians = _rotation.ToEulerAngles();
+        return new Vector3(
+            x: MathHelper.RadiansToDegrees(radians.X),
+            y: MathHelper.RadiansToDegrees(radians.Y),
+            z: MathHelper.RadiansToDegrees(radians.Z));
+    }
+
     public override string ToString()
     {
         string position = $"({_position.X}, {_position.Y}, {_position.Z})";
 
-        Vector3 radians = _rotation.ToEulerAngles();
-        string rotation = $"({MathHelper.RadiansToDegrees(radians.X)}, {MathHelper.RadiansToDegrees(radians.Y)}, {MathHelper.RadiansToDegrees(radians.Z)})";
+        Vector3 degrees = GetEulerAnglesInDegrees();
+        string rotation = $"({degrees.X}, {degrees.Y}, {degrees.Z})";
 
         string scale = $"({_scale.X}, {_scale.Y}, {_scale.Z})";
 

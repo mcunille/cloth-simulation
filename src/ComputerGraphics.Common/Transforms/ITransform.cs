@@ -1,6 +1,6 @@
 using OpenTK.Mathematics;
 
-namespace ComputerGraphics.Common.Transform;
+namespace ComputerGraphics.Common.Transforms;
 
 public interface ITransform
 {
@@ -21,4 +21,6 @@ public interface ITransform
 
     void Rotate(float x, float y, float z, bool world);
     void Rotate(Vector3 degrees, bool world);
+
+    Vector3 GetEulerAnglesInDegrees();
 }
