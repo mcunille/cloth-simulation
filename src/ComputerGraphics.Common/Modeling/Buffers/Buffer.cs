@@ -2,23 +2,27 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace ComputerGraphics.Common.Modeling.Buffers;
 
-public abstract class BufferArray : IDisposable
+public abstract class Buffer : IDisposable
 {
     private readonly int _vertexArray;
+
     private bool _disposed;
 
-    public BufferArray(int vertexArray)
+    public Buffer(int vertexArray, BufferTarget target)
     {
         _vertexArray = vertexArray;
+        Target = target;
     }
 
-    ~BufferArray()
+    ~Buffer()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: false);
     }
 
-    protected int BufferID { get; private set; } = 0;
+    public int BufferID { get; private set; } = 0;
+
+    protected BufferTarget Target { get; private set; }
 
     public void Reset()
     {
@@ -40,9 +44,8 @@ public abstract class BufferArray : IDisposable
     protected void ApplyArrayBufferConfiguration(Action configure)
     {
         GL.BindVertexArray(_vertexArray);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, BufferID);
+        GL.BindBuffer(Target, BufferID);
         configure.Invoke();
-        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         GL.BindVertexArray(0);
     }
 

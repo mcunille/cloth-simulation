@@ -26,4 +26,8 @@ public interface IMesh : IDisposable
     /// </summary>
     /// <param name="colors">The color data.</param>
     void SetColorData(Vector3[] colors);
+
+    void SetTextureData(Vector2[] coordinates);
+
+    void SetIndexData(uint[] indices);
 }

@@ -12,6 +12,8 @@ public class Mesh : IMesh, IDisposable
 
     private readonly VertexBufferArray _vertexBuffer;
     private readonly ColorBufferArray _colorBuffer;
+    private readonly TextureBufferArray _textureBuffer;
+    private readonly IndexBufferArray _indexBuffer;
 
     private bool _disposed;
 
@@ -22,6 +24,8 @@ public class Mesh : IMesh, IDisposable
         _vertexArrayObject = GL.GenVertexArray();
         _vertexBuffer = new VertexBufferArray(_vertexArrayObject, usage);
         _colorBuffer = new ColorBufferArray(_vertexArrayObject, usage);
+        _textureBuffer = new TextureBufferArray(_vertexArrayObject, usage);
+        _indexBuffer = new IndexBufferArray(_vertexArrayObject, usage);
     }
 
     ~Mesh()
@@ -42,7 +46,16 @@ public class Mesh : IMesh, IDisposable
     public void Draw()
     {
         GL.BindVertexArray(_vertexArrayObject);
-        GL.DrawArrays(_primitive, 0, _vertexBuffer.Count);
+
+        if (_indexBuffer.Count > 0)
+        {
+            GL.DrawElements(_primitive, _indexBuffer.Count, DrawElementsType.UnsignedInt, 0);
+        }
+        else
+        {
+            GL.DrawArrays(_primitive, 0, _vertexBuffer.Count);
+        }
+
         GL.BindVertexArray(0);
     }
 
@@ -64,6 +77,18 @@ public class Mesh : IMesh, IDisposable
         _colorBuffer.SetColorData(colors);
     }
 
+    /// <inheritdoc/>
+    public void SetTextureData(Vector2[] coordinates)
+    {
+        _textureBuffer.SetTextureData(coordinates);
+    }
+
+    /// <inheritdoc/>
+    public void SetIndexData(uint[] indices)
+    {
+        _indexBuffer.SetIndexData(indices);
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
@@ -73,6 +98,8 @@ public class Mesh : IMesh, IDisposable
                 // Dispose managed state (managed objects)
                 _vertexBuffer.Dispose();
                 _colorBuffer.Dispose();
+                _textureBuffer.Dispose();
+                _indexBuffer.Dispose();
             }
 
             GL.DeleteVertexArray(_vertexArrayObject);

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <None Update="Shaders/*" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Resources/*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
