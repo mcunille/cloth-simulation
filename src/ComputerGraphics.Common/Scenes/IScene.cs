@@ -1,3 +1,5 @@
+using OpenTK.Windowing.Common;
+
 namespace ComputerGraphics.Common.Scenes;
 
 public interface IScene : IDisposable
@@ -25,5 +27,5 @@ public interface IScene : IDisposable
     /// <summary>
     /// Scene update.
     /// </summary>
-    void Update() { }
+    void Update(FrameEventArgs e) { }
 }

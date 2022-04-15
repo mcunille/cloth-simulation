@@ -1,4 +1,5 @@
 using ComputerGraphics.Common.Modeling.Buffers;
+using ComputerGraphics.Common.Shaders;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
@@ -10,9 +11,9 @@ public class Mesh : IMesh, IDisposable
 
     private readonly int _vertexArrayObject;
 
-    private readonly VertexBufferArray _vertexBuffer;
-    private readonly ColorBufferArray _colorBuffer;
-    private readonly TextureBufferArray _textureBuffer;
+    private readonly VertexAttributeBufferArray _vertexBuffer;
+    private readonly VertexAttributeBufferArray _colorBuffer;
+    private readonly VertexAttributeBufferArray _textureBuffer;
     private readonly IndexBufferArray _indexBuffer;
 
     private bool _disposed;
@@ -22,9 +23,9 @@ public class Mesh : IMesh, IDisposable
         _primitive = primitive;
 
         _vertexArrayObject = GL.GenVertexArray();
-        _vertexBuffer = new VertexBufferArray(_vertexArrayObject, usage);
-        _colorBuffer = new ColorBufferArray(_vertexArrayObject, usage);
-        _textureBuffer = new TextureBufferArray(_vertexArrayObject, usage);
+        _vertexBuffer = new VertexAttributeBufferArray(_vertexArrayObject, ShaderAttribute.Vertex, usage);
+        _colorBuffer = new VertexAttributeBufferArray(_vertexArrayObject, ShaderAttribute.Color, usage);
+        _textureBuffer = new VertexAttributeBufferArray(_vertexArrayObject, ShaderAttribute.Texture, usage);
         _indexBuffer = new IndexBufferArray(_vertexArrayObject, usage);
     }
 
@@ -60,34 +61,28 @@ public class Mesh : IMesh, IDisposable
     }
 
     /// <inheritdoc/>
-    public void SetVertexData(Vector2[] vertices)
-    {
-        _vertexBuffer.SetVertexData(vertices);
-    }
+    public void SetVertexData(Vector2[] vertices) => _vertexBuffer.SetData(vertices);
 
     /// <inheritdoc/>
-    public void SetVertexData(Vector3[] vertices)
-    {
-        _vertexBuffer.SetVertexData(vertices);
-    }
+    public void SetVertexData(Vector3[] vertices) => _vertexBuffer.SetData(vertices);
 
     /// <inheritdoc/>
-    public void SetColorData(Vector3[] colors)
-    {
-        _colorBuffer.SetColorData(colors);
-    }
+    public void Set2DVertexData(float[] vertices) => SetData(_vertexBuffer, vertices, size: 2);
 
     /// <inheritdoc/>
-    public void SetTextureData(Vector2[] coordinates)
-    {
-        _textureBuffer.SetTextureData(coordinates);
-    }
+    public void Set3DVertexData(float[] vertices) => SetData(_vertexBuffer, vertices, size: 3);
 
     /// <inheritdoc/>
-    public void SetIndexData(uint[] indices)
-    {
-        _indexBuffer.SetIndexData(indices);
-    }
+    public void SetColorData(Vector3[] colors) => _colorBuffer.SetData(colors);
+
+    /// <inheritdoc/>
+    public void SetTextureData(Vector2[] coordinates) => _textureBuffer.SetData(coordinates);
+
+    /// <inheritdoc/>
+    public void Set2DTextureData(float[] coordinates) => SetData(_textureBuffer, coordinates, size: 2);
+
+    /// <inheritdoc/>
+    public void SetIndexData(uint[] indices) => _indexBuffer.SetIndexData(indices);
 
     protected virtual void Dispose(bool disposing)
     {
@@ -106,5 +101,10 @@ public class Mesh : IMesh, IDisposable
 
             _disposed = true;
         }
+    }
+
+    private static void SetData(VertexAttributeBufferArray buffer, float[] data, int size)
+    {
+        buffer.SetData<float>(data, size, data.Length * sizeof(float), stride: size * sizeof(float));
     }
 }

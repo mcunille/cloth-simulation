@@ -1,6 +1,3 @@
-// IMPORTANT
-// This shader has simple compilation problems in order to demonstrate the output log when compiling shaders
-
 #version 450
 
 // Color of the fragment that this shader outputs
@@ -15,6 +12,4 @@ void main(void)
 {
 	// The final color of the fragment.
 	vFragColor = texture(mainTex, texCoords);
-
-
 }

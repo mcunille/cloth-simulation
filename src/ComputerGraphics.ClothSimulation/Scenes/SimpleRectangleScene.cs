@@ -5,6 +5,7 @@ using ComputerGraphics.Common.Shaders;
 using ComputerGraphics.Common.Textures;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 
 namespace ComputerGraphics.ClothSimulation.Scenes;
 
@@ -14,34 +15,111 @@ public class SimpleRectangleScene : IScene
     private readonly ITexture _texture;
     private readonly IShader _shader;
 
+    private double _time;
+
+    private Matrix4 _view;
+    private Matrix4 _projection;
+
     private bool _disposed;
 
     public SimpleRectangleScene()
     {
         _mesh = new Mesh(primitive: PrimitiveType.Triangles);
-        _mesh.SetVertexData(new Vector2[]
+        _mesh.Set3DVertexData(new float[]
         {
-            new Vector2(0.5f, 0.5f),    // top right
-            new Vector2(0.5f, -0.5f),   // bottom right
-            new Vector2(-0.5f, -0.5f),  // bottom left
-            new Vector2(-0.5f, 0.5f),   // top left
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f,  0.5f, -0.5f,
+            0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+
+            -0.5f, -0.5f,  0.5f,
+            0.5f, -0.5f,  0.5f,
+            0.5f,  0.5f,  0.5f,
+            0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+            -0.5f, -0.5f,  0.5f,
+
+            -0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+
+            0.5f,  0.5f,  0.5f,
+            0.5f,  0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f,  0.5f,
+            0.5f,  0.5f,  0.5f,
+
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f,  0.5f,
+            0.5f, -0.5f,  0.5f,
+            -0.5f, -0.5f,  0.5f,
+            -0.5f, -0.5f, -0.5f,
+
+            -0.5f,  0.5f, -0.5f,
+            0.5f,  0.5f, -0.5f,
+            0.5f,  0.5f,  0.5f,
+            0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f, -0.5f,
         });
-        _mesh.SetIndexData(new uint[]
+        _mesh.Set2DTextureData(new float[]
         {
-            0, 1, 3,    // first triangle
-            1, 2, 3,    // second triangle
-        });
-        _mesh.SetTextureData(new Vector2[]
-        {
-            new Vector2(1.0f, 1.0f),    // top right
-            new Vector2(1.0f, 0.0f),    // bottom right
-            new Vector2(0.0f, 0.0f),    // bottom left
-            new Vector2(0.0f, 1.0f),    // top left
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
         });
 
         string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         _shader = new Shader($"{assemblyPath}/Shaders/Diffuse.vert", $"{assemblyPath}/Shaders/Diffuse.frag");
         _texture = new Texture2D($"{assemblyPath}/Resources/container.png");
+
+        _view = Matrix4.CreateTranslation(0.0f, 0.0f, -3.0f);
+        _projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45f), 800.0f / 600.0f, 0.1f, 100.0f);
     }
 
     ~SimpleRectangleScene()
@@ -58,16 +136,21 @@ public class SimpleRectangleScene : IScene
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     }
 
-    public void Update()
+    public void Update(FrameEventArgs e)
     {
-        //_camera.Yaw(90.0f * 0.01f);
+        _time += 10.0 * e.Time;
     }
 
     public void Draw()
     {
+        Matrix4 model = Matrix4.Identity
+            * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_time))
+            * Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_time))
+            * Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(_time));
+
         _texture.Activate(TextureUnit.Texture0);
         _shader.Activate();
-        _shader.SetUniformMatrix4("mvpMatrix", Matrix4.Identity);
+        _shader.SetUniformMatrix4("mvpMatrix", model * _view * _projection);
 
         _mesh.Draw();
 

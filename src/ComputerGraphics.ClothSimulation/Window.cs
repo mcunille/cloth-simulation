@@ -54,7 +54,7 @@ public class Window : GameWindow
             Close();
         }
 
-        _scene.Update();
+        _scene.Update(args);
     }
 
     /// <inheritdoc/>
