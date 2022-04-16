@@ -7,25 +7,23 @@ public interface IScene : IDisposable
     /// <summary>
     /// Called every time this scene becomes active.
     /// </summary>
-    void Awake();
-
-    /// <summary>
-    /// Scene render.
-    /// </summary>
-    void Draw();
-
-    /// <summary>
-    /// Called every time this scene becomes inactive.
-    /// </summary>
-    void Sleep() { }
-
-    /// <summary>
-    /// Reset the state of the scene.
-    /// </summary>
-    void Reset() { }
+    void Load();
 
     /// <summary>
     /// Scene update.
     /// </summary>
-    void Update(FrameEventArgs e) { }
+    /// <param name="e">The event arguments.</param>
+    void Update(FrameEventArgs e);
+
+    /// <summary>
+    /// Scene render.
+    /// </summary>
+    /// <param name="e">The event arguments.</param>
+    void Render(FrameEventArgs e);
+
+    /// <summary>
+    /// Scene resize.
+    /// </summary>
+    /// <param name="e">The event arguments.</param>
+    void Resize(ResizeEventArgs e);
 }

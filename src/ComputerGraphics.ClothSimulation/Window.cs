@@ -18,7 +18,7 @@ public class Window : GameWindow
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
     : base(gameWindowSettings, nativeWindowSettings)
     {
-        _scene = new SimpleRectangleScene();
+        _scene = new SimpleContainerScene(window: this);
     }
 
     /// <inheritdoc/>
@@ -27,8 +27,9 @@ public class Window : GameWindow
         base.OnLoad();
 
         GL.Enable(EnableCap.DepthTest);
+        VSync = VSyncMode.On;
 
-        _scene.Awake();
+        _scene.Load();
     }
 
     /// <inheritdoc/>
@@ -38,7 +39,7 @@ public class Window : GameWindow
 
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        _scene.Draw();
+        _scene.Render(args);
 
         SwapBuffers();
     }
@@ -47,13 +48,6 @@ public class Window : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
-
-        KeyboardState input = KeyboardState;
-        if (input.IsKeyDown(Keys.Escape))
-        {
-            Close();
-        }
-
         _scene.Update(args);
     }
 
@@ -62,6 +56,7 @@ public class Window : GameWindow
     {
         base.OnResize(e);
         GL.Viewport(0, 0, Size.X, Size.Y);
+        _scene.Resize(e);
     }
 
     protected override void OnUnload()
@@ -69,5 +64,21 @@ public class Window : GameWindow
         // Dispose of resources.
         _scene.Dispose();
         base.OnUnload();
+    }
+
+    protected override void OnKeyDown(KeyboardKeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (!IsFocused)
+        {
+            // Only accept input when focused.
+            return;
+        }
+
+        if (e.Key == Keys.Escape)
+        {
+            Close();
+        }
     }
 }

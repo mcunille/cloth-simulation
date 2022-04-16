@@ -4,6 +4,7 @@ using ComputerGraphics.Common.Scenes;
 using ComputerGraphics.Common.Shaders;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 
 namespace ComputerGraphics.ClothSimulation.Scenes;
 
@@ -40,7 +41,7 @@ public class SimpleTriangleScene : IScene
         Dispose(disposing: false);
     }
 
-    public void Awake()
+    public void Load()
     {
         Console.WriteLine("Starting scene: Simple Triangle");
 
@@ -48,12 +49,7 @@ public class SimpleTriangleScene : IScene
         GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     }
 
-    public void Update()
-    {
-        //_camera.Yaw(90.0f * 0.01f);
-    }
-
-    public void Draw()
+    public void Render(FrameEventArgs e)
     {
         _shader.Activate();
         _shader.SetUniformMatrix4("mvpMatrix", Matrix4.Identity);
@@ -61,6 +57,16 @@ public class SimpleTriangleScene : IScene
         _triangleMesh.Draw();
 
         _shader.Deactivate();
+    }
+
+    public void Update(FrameEventArgs e)
+    {
+        // No-op
+    }
+
+    public void Resize(ResizeEventArgs e)
+    {
+        // No-op
     }
 
     public void Dispose()
