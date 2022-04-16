@@ -61,28 +61,28 @@ public class Mesh : IMesh, IDisposable
     }
 
     /// <inheritdoc/>
-    public void SetVertexData(Vector2[] vertices) => _vertexBuffer.SetData(vertices);
+    public void SetVertexData(IEnumerable<Vector2> vertices) => _vertexBuffer.SetData(vertices);
 
     /// <inheritdoc/>
-    public void SetVertexData(Vector3[] vertices) => _vertexBuffer.SetData(vertices);
+    public void SetVertexData(IEnumerable<Vector3> vertices) => _vertexBuffer.SetData(vertices);
 
     /// <inheritdoc/>
-    public void Set2DVertexData(float[] vertices) => SetData(_vertexBuffer, vertices, size: 2);
+    public void Set2DVertexData(IEnumerable<float> vertices) => SetData(_vertexBuffer, vertices, size: 2);
 
     /// <inheritdoc/>
-    public void Set3DVertexData(float[] vertices) => SetData(_vertexBuffer, vertices, size: 3);
+    public void Set3DVertexData(IEnumerable<float> vertices) => SetData(_vertexBuffer, vertices, size: 3);
 
     /// <inheritdoc/>
-    public void SetColorData(Vector3[] colors) => _colorBuffer.SetData(colors);
+    public void SetColorData(IEnumerable<Vector3> colors) => _colorBuffer.SetData(colors);
 
     /// <inheritdoc/>
-    public void SetTextureData(Vector2[] coordinates) => _textureBuffer.SetData(coordinates);
+    public void SetTextureData(IEnumerable<Vector2> coordinates) => _textureBuffer.SetData(coordinates);
 
     /// <inheritdoc/>
-    public void Set2DTextureData(float[] coordinates) => SetData(_textureBuffer, coordinates, size: 2);
+    public void Set2DTextureData(IEnumerable<float> coordinates) => SetData(_textureBuffer, coordinates, size: 2);
 
     /// <inheritdoc/>
-    public void SetIndexData(uint[] indices) => _indexBuffer.SetIndexData(indices);
+    public void SetIndexData(IEnumerable<uint> indices) => _indexBuffer.SetIndexData(indices);
 
     protected virtual void Dispose(bool disposing)
     {
@@ -103,8 +103,8 @@ public class Mesh : IMesh, IDisposable
         }
     }
 
-    private static void SetData(VertexAttributeBufferArray buffer, float[] data, int size)
+    private static void SetData(VertexAttributeBufferArray buffer, IEnumerable<float> data, int size)
     {
-        buffer.SetData<float>(data, size, data.Length * sizeof(float), stride: size * sizeof(float));
+        buffer.SetData<float>(data, size, data.Count() * sizeof(float), stride: size * sizeof(float));
     }
 }

@@ -14,15 +14,15 @@ public class IndexBufferArray : Buffer
 
     public int Count { get; private set; } = 0;
 
-    public void SetIndexData(uint[] indices)
+    public void SetIndexData(IEnumerable<uint> indices)
     {
         Reset();
 
         ApplyArrayBufferConfiguration(() =>
         {
-            GL.BufferData(Target, indices.Length * sizeof(uint), indices, _usage);
+            GL.BufferData(Target, indices.Count() * sizeof(uint), indices.ToArray(), _usage);
         });
 
-        Count = indices.Length;
+        Count = indices.Count();
     }
 }

@@ -23,23 +23,23 @@ public class VertexAttributeBufferArray : Buffer
 
     public int Count { get; private set; }
 
-    public void SetData(Vector2[] data) => SetData(data, size: 2, sizeInBytes: data.Length * Vector2.SizeInBytes);
+    public void SetData(IEnumerable<Vector2> data) => SetData(data, size: 2, sizeInBytes: data.Count() * Vector2.SizeInBytes);
 
-    public void SetData(Vector3[] data) => SetData(data, size: 3, sizeInBytes: data.Length * Vector3.SizeInBytes);
+    public void SetData(IEnumerable<Vector3> data) => SetData(data, size: 3, sizeInBytes: data.Count() * Vector3.SizeInBytes);
 
-    public virtual void SetData<T>(T[] data, int size, int sizeInBytes, int stride = 0, int offset = 0)
+    public virtual void SetData<T>(IEnumerable<T> data, int size, int sizeInBytes, int stride = 0, int offset = 0)
     where T : struct
     {
         Reset();
 
         ApplyArrayBufferConfiguration(() =>
         {
-            GL.BufferData<T>(Target, sizeInBytes, data, _usage);
+            GL.BufferData<T>(Target, sizeInBytes, data.ToArray(), _usage);
             GL.EnableVertexAttribArray(_attributeIndex);
             GL.VertexAttribPointer(_attributeIndex, size, VertexAttribPointerType.Float, false, stride, offset);
             GL.BindBuffer(Target, 0);
         });
 
-        Count = data.Length;
+        Count = data.Count();
     }
 }

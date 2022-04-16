@@ -18,7 +18,7 @@ public class Window : GameWindow
     public Window(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
     : base(gameWindowSettings, nativeWindowSettings)
     {
-        _scene = new SimpleContainerScene(window: this);
+        _scene = new ClothScene(window: this);
     }
 
     /// <inheritdoc/>

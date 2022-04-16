@@ -6,7 +6,7 @@ namespace ComputerGraphics.Common.Cameras;
 
 public class Camera : ICamera
 {
-    private const float MovementSpeed = 1.5f;
+    private const float MovementSpeed = 2.0f;
     private const float RotationSpeed = 20.0f;
 
     private Vector3 _front = -Vector3.UnitZ;
@@ -84,7 +84,7 @@ public class Camera : ICamera
 
     public Matrix4 ViewMatrix => Matrix4.LookAt(Position, Position + _front, _up);
 
-    public Matrix4 ProjectionMatrix => Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.01f, 100f);
+    public Matrix4 ProjectionMatrix => Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.1f, 100f);
 
     public void HandleKeyboardState(KeyboardState input, FrameEventArgs e)
     {
