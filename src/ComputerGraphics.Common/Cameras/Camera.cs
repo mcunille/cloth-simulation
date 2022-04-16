@@ -82,9 +82,11 @@ public class Camera : ICamera
         }
     }
 
-    public Matrix4 ViewMatrix => Matrix4.LookAt(Position, Position + _front, _up);
+    public Matrix4 ViewProjectionMatrix => ViewMatrix * ProjectionMatrix;
 
-    public Matrix4 ProjectionMatrix => Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.1f, 100f);
+    private Matrix4 ViewMatrix => Matrix4.LookAt(Position, Position + _front, _up);
+
+    private Matrix4 ProjectionMatrix => Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.1f, 100f);
 
     public void HandleKeyboardState(KeyboardState input, FrameEventArgs e)
     {

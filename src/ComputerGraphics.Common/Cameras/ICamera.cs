@@ -12,8 +12,7 @@ public interface ICamera
     float Yaw { get; set; }
     float Fov { get; set; }
 
-    Matrix4 ViewMatrix { get; }
-    Matrix4 ProjectionMatrix { get; }
+    Matrix4 ViewProjectionMatrix { get; }
 
     void HandleKeyboardState(KeyboardState input, FrameEventArgs e);
 }

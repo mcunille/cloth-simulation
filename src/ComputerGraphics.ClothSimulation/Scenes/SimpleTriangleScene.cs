@@ -35,12 +35,6 @@ public class SimpleTriangleScene : IScene
         _shader = new Shader($"{assemblyPath}/Shaders/Default.vert", $"{assemblyPath}/Shaders/Default.frag");
     }
 
-    ~SimpleTriangleScene()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: false);
-    }
-
     public void Load()
     {
         Console.WriteLine("Starting scene: Simple Triangle");

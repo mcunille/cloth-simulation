@@ -127,12 +127,6 @@ public class SimpleContainerScene : IScene
             aspectRatio: _window.Size.X / (float)_window.Size.Y);
     }
 
-    ~SimpleContainerScene()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: false);
-    }
-
     public void Load()
     {
         Console.WriteLine("Starting scene: Simple Rectangle");
@@ -158,7 +152,7 @@ public class SimpleContainerScene : IScene
 
         _texture.Activate(TextureUnit.Texture0);
         _shader.Activate();
-        _shader.SetUniformMatrix4("mvpMatrix", model * _camera.ViewMatrix * _camera.ProjectionMatrix);
+        _shader.SetUniformMatrix4("mvpMatrix", model * _camera.ViewProjectionMatrix);
 
         _mesh.Draw();
 
